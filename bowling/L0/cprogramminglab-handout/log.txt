@@ -1,9 +1,0 @@
-test-2 in 330
-test-1 in 270
-test0 in 1b0
-test1 in 0f0
-
-after reverse
-
-test1 in 0f0
-test1->next = test-2 in 330
