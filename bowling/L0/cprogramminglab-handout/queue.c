@@ -26,7 +26,13 @@
 queue_t *queue_new(void) {
     queue_t *q = malloc(sizeof(queue_t));
     /* What if malloc returned NULL? */
-    q->head = NULL;
+    if(q == NULL) 
+    {
+        printf("Create queue failed: Memory error\n");
+        exit(0);
+    }
+    q->tail = q->head = NULL;
+    q->n = 0;
     return q;
 }
 
@@ -36,6 +42,14 @@ queue_t *queue_new(void) {
  */
 void queue_free(queue_t *q) {
     /* How about freeing the list elements and the strings? */
+    while(q->head)
+    {
+        list_ele_t *tmp;
+        free(q->head->value);
+        tmp = q->head;
+        q->head = q->head->next;
+        free(tmp);
+    }
     /* Free queue structure */
     free(q);
 }
@@ -53,13 +67,21 @@ void queue_free(queue_t *q) {
  * @return false if q is NULL, or memory allocation failed
  */
 bool queue_insert_head(queue_t *q, const char *s) {
+    //create new node
     list_ele_t *newh;
     /* What should you do if the q is NULL? */
     newh = malloc(sizeof(list_ele_t));
+    if(!newh) return false;
+    newh->value = (char *)malloc(strlen(s)+1);
+    if(!newh->value) return false;
+    strcpy(newh->value, s);
+
     /* Don't forget to allocate space for the string and copy it */
     /* What if either call to malloc returns NULL? */
     newh->next = q->head;
+    if(!q->head) q->tail = q->head;
     q->head = newh;
+    
     return true;
 }
 
@@ -69,7 +91,7 @@ bool queue_insert_head(queue_t *q, const char *s) {
  * This function explicitly allocates space to create a copy of `s`.
  * The inserted element points to a copy of `s`, instead of `s` itself.
  *
- * @param[in] q The queue to insert into
+ * @param[] q The queue to insert into
  * @param[in] s String to be copied and inserted into the queue
  *
  * @return true if insertion was successful
@@ -78,7 +100,16 @@ bool queue_insert_head(queue_t *q, const char *s) {
 bool queue_insert_tail(queue_t *q, const char *s) {
     /* You need to write the complete code for this function */
     /* Remember: It should operate in O(1) time */
-    return false;
+    list_ele_t * newt = (list_ele_t *)malloc(sizeof(list_ele_t));
+    if(!newt) return false;
+    newt->value = (char*) malloc(sizeof(s)+1);
+    if(!newt->value) return false;
+    strcpy(newt->value, s);
+    newt->next = NULL;
+
+    q->tail = q->tail->next = newt;
+    if(!q->head) q->head = q->tail;
+    return true;
 }
 
 /**
