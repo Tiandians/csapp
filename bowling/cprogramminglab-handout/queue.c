@@ -71,7 +71,7 @@ bool queue_insert_head(queue_t *q, const char *s) {
     newh = malloc(sizeof(list_ele_t));
     if(!newh) return false;
     newh->value = (char *)malloc(strlen(s)+1);
-    if(!newh->value) return false;
+    if(!newh->value) { free(newh); return false;}
     strcpy(newh->value, s);
 
     /* Don't forget to allocate space for the string and copy it */
@@ -103,7 +103,7 @@ bool queue_insert_tail(queue_t *q, const char *s) {
     list_ele_t * newt = (list_ele_t *)malloc(sizeof(list_ele_t));
     if(!newt) return false;
     newt->value = (char*) malloc(strlen(s)+1);
-    if(!newt->value) return false;
+    if(!newt->value) { free(newt); return false;}
     strcpy(newt->value, s);
     newt->next = NULL;
 
@@ -139,7 +139,10 @@ bool queue_remove_head(queue_t *q, char *buf, size_t bufsize) {
         strncpy(buf, q->head->value, bufsize - 1);
         buf[bufsize - 1] = 0;
     }
+    free(q->head->value);
+    list_ele_t * tmp = q->head;
     q->head = q->head->next;
+    free(tmp);
     q->n--;
     return true;
 }
