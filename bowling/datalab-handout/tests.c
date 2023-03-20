@@ -7,112 +7,98 @@
 
 /* Convert from bit level representation to floating point number */
 float u2f(unsigned u) {
-  union {
-    unsigned u;
-    float f;
-  } a;
-  a.u = u;
-  return a.f;
+    union {
+        unsigned u;
+        float f;
+    } a;
+    a.u = u;
+    return a.f;
 }
 
 /* Convert from floating point number to bit-level representation */
 unsigned f2u(float f) {
-  union {
-    unsigned u;
-    float f;
-  } a;
-  a.f = f;
-  return a.u;
-}
-
-//1
-int test_bitXor(int x, int y)
-{
-  return x^y;
-}
-int test_tmin(void) {
-  return 0x80000000;
+    union {
+        unsigned u;
+        float f;
+    } a;
+    a.f = f;
+    return a.u;
 }
 //2
-int test_isTmax(int x) {
-    return x == 0x7FFFFFFF;
+long test_implication(long x, long y)
+{
+  return !(x && (!y));
 }
-int test_allOddBits(int x) {
-  int i;
-  for (i = 1; i < 32; i+=2)
-      if ((x & (1<<i)) == 0)
-   return 0;
-  return 1;
+long test_leastBitPos(long x) {
+  long mask = 1L;
+  if (x == 0)
+    return 0;
+  while (!(mask & x)) {
+    mask = mask << 1;
+  }
+  return mask;
 }
-
-
-
-
-
-
-
-int test_negate(int x) {
-  return -x;
+long test_distinctNegation(long x) {
+    return (long) (x != -x);
+}
+long test_fitsBits(long x, long n)
+{
+  long TMin_n = -(1L << (n-1));
+  /* This convoluted way of generating TMax avoids overflow */
+  long TMax_n = (long) ((1UL << (n-1)) - 1UL);
+  return (long) (x >= TMin_n && x <= TMax_n);
 }
 //3
-
-
-int test_isAsciiDigit(int x) {
-  return (0x30 <= x) && (x <= 0x39);
-}
-int test_conditional(int x, int y, int z)
+long test_trueFiveEighths(long x)
 {
-  return x?y:z;
+  return (long) (((__int128) x * 5)/8);
 }
-int test_isLessOrEqual(int x, int y)
+long test_addOK(long x, long y)
 {
-  return x <= y;
+    /* Use 128-bit arithmetic to check */
+    __int128 lsum = (__int128) x + y;
+    return (long) (lsum == (long) lsum);
+}
+long test_isPower2(long x) {
+  long i;
+  for (i = 0; i < 63; i++) {
+    if (x == 1L<<i)
+      return 1;
+  }
+  return 0;
+}
+long test_rotateLeft(long x, long n) {
+  unsigned long u = (unsigned long) x;
+  long i;
+  for (i = 0; i < n; i++) {
+      unsigned long msb = u >> 63;
+      unsigned long rest = u << 1;
+      u = rest | msb;
+  }
+  return (long) u;
 }
 //4
-int test_logicalNeg(int x)
-{
-  return !x;
+long test_isPalindrome(long x) {
+    long result = 1L;
+    int i;
+    long mask = 0xFFFFFFFFL;
+    long xlo = x & mask;
+    long xhi = (x >> 32) & mask;
+    for (i = 0; i < 32; i++) {
+        int flipi = 31-i;
+        long bhigh = (xhi >> i) & 0x1L;
+        long blow = (xlo >> flipi) & 0x1L;
+        result = result && (long) (bhigh == blow);
+    }
+    return result;
 }
-int test_howManyBits(int x) {
-    unsigned int a, cnt;
-    x = x<0 ? -x-1 : x;
-    a = (unsigned int)x;
-    for (cnt=0; a; a>>=1, cnt++)
-        ;
-
-    return (int)(cnt + 1);
+long test_bitParity(long x) {
+  long result = 0;
+  int i;
+  for (i = 0; i < 64; i++)
+    result ^= (x >> i) & 0x1L;
+  return result;
 }
-//float
-unsigned test_floatScale2(unsigned uf) {
-  float f = u2f(uf);
-  float tf = 2*f;
-  if (isnan(f))
-    return uf;
-  else
-    return f2u(tf);
-}
-int test_floatFloat2Int(unsigned uf) {
-  float f = u2f(uf);
-  int x = (int) f;
-  return x;
-}
-unsigned test_floatPower2(int x) {
-  float result = 1.0;
-  float p2 = 2.0;
-  int recip = (x < 0);
-  /* treat tmin specially */
-  if ((unsigned)x == 0x80000000) {
-      return 0;
-  }
-  if (recip) {
-    x = -x;
-    p2 = 0.5;
-  }
-  while (x > 0) {
-    if (x & 0x1)
-      result = result * p2;
-    p2 = p2 * p2;
-    x >>= 1;
-  }
-  return f2u(result);
+long test_absVal(long x) {
+  return (x < 0L) ? -x : x;
 }

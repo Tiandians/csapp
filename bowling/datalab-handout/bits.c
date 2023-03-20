@@ -1,39 +1,28 @@
-/* 
- * CS:APP Data Lab 
- * 
+/*
+ * CS:APP Data Lab
+ *
  * <Please put your name and userid here>
- * 
+ *
  * bits.c - Source file with your solutions to the Lab.
  *          This is the file you will hand in to your instructor.
- *
- * WARNING: Do not include the <stdio.h> header; it confuses the dlc
- * compiler. You can still use printf for debugging without including
- * <stdio.h>, although you might get a compiler warning. In general,
- * it's not good practice to ignore compiler warnings, but in this
- * case it's OK.  
  */
 
-#if 0
-/*
- * Instructions to Students:
- *
- * STEP 1: Read the following instructions carefully.
- */
+/* Instructions to Students:
 
 You will provide your solution to the Data Lab by
 editing the collection of functions in this source file.
 
 INTEGER CODING RULES:
- 
+
   Replace the "return" statement in each function with one
-  or more lines of C code that implements the function. Your code 
+  or more lines of C code that implements the function. Your code
   must conform to the following style:
- 
-  int Funct(arg1, arg2, ...) {
-      /* brief description of how your implementation works */
-      int var1 = Expr1;
+
+  long Funct(long arg1, long arg2, ...) {
+      // brief description of how your implementation works
+      long var1 = Expr1;
       ...
-      int varM = ExprM;
+      long varM = ExprM;
 
       varJ = ExprJ;
       ...
@@ -42,12 +31,17 @@ INTEGER CODING RULES:
   }
 
   Each "Expr" is an expression using ONLY the following:
-  1. Integer constants 0 through 255 (0xFF), inclusive. You are
-      not allowed to use big constants such as 0xffffffff.
+  1. (Long) integer constants 0 through 255 (0xFFL), inclusive. You are
+      not allowed to use big constants such as 0xffffffffL.
   2. Function arguments and local variables (no global variables).
-  3. Unary integer operations ! ~
-  4. Binary integer operations & ^ | + << >>
-    
+  3. Local variables of type int and long
+  4. Unary integer operations ! ~
+     - Their arguments can have types int or long
+     - Note that ! always returns int, even if the argument is long
+  5. Binary integer operations & ^ | + << >>
+     - Their arguments can have types int or long
+  6. Casting from int to long and from long to int
+
   Some of the problems restrict the set of allowed operators even further.
   Each "Expr" may consist of multiple operators. You are not restricted to
   one operator per line.
@@ -58,57 +52,39 @@ INTEGER CODING RULES:
   3. Define any additional functions in this file.
   4. Call any functions.
   5. Use any other operations, such as &&, ||, -, or ?:
-  6. Use any form of casting.
-  7. Use any data type other than int.  This implies that you
+  6. Use any form of casting other than between int and long.
+  7. Use any data type other than int or long.  This implies that you
      cannot use arrays, structs, or unions.
 
- 
   You may assume that your machine:
-  1. Uses 2s complement, 32-bit representations of integers.
-  2. Performs right shifts arithmetically.
-  3. Has unpredictable behavior when shifting if the shift amount
-     is less than 0 or greater than 31.
-
+  1. Uses 2s complement representations for int and long.
+  2. Data type int is 32 bits, long is 64.
+  3. Performs right shifts arithmetically.
+  4. Has unpredictable behavior when shifting if the shift amount
+     is less than 0 or greater than 31 (int) or 63 (long)
 
 EXAMPLES OF ACCEPTABLE CODING STYLE:
-  /*
-   * pow2plus1 - returns 2^x + 1, where 0 <= x <= 31
-   */
-  int pow2plus1(int x) {
-     /* exploit ability of shifts to compute powers of 2 */
-     return (1 << x) + 1;
+  //
+  // pow2plus1 - returns 2^x + 1, where 0 <= x <= 63
+  //
+  long pow2plus1(long x) {
+     // exploit ability of shifts to compute powers of 2
+     // Note that the 'L' indicates a long constant
+     return (1L << x) + 1L;
   }
 
-  /*
-   * pow2plus4 - returns 2^x + 4, where 0 <= x <= 31
-   */
-  int pow2plus4(int x) {
-     /* exploit ability of shifts to compute powers of 2 */
-     int result = (1 << x);
-     result += 4;
+  //
+  // pow2plus4 - returns 2^x + 4, where 0 <= x <= 63
+  //
+  long pow2plus4(long x) {
+     // exploit ability of shifts to compute powers of 2
+     long result = (1L << x);
+     result += 4L;
      return result;
   }
 
-FLOATING POINT CODING RULES
-
-For the problems that require you to implement floating-point operations,
-the coding rules are less strict.  You are allowed to use looping and
-conditional control.  You are allowed to use both ints and unsigneds.
-You can use arbitrary integer and unsigned constants. You can use any arithmetic,
-logical, or comparison operations on int or unsigned data.
-
-You are expressly forbidden to:
-  1. Define or use any macros.
-  2. Define any additional functions in this file.
-  3. Call any functions.
-  4. Use any form of casting.
-  5. Use any data type other than int or unsigned.  This means that you
-     cannot use arrays, structs, or unions.
-  6. Use any floating point data types, operations, or constants.
-
-
 NOTES:
-  1. Use the dlc (data lab checker) compiler (described in the handout) to 
+  1. Use the dlc (data lab checker) compiler (described in the handout) to
      check the legality of your solutions.
   2. Each function has a maximum number of operations (integer, logical,
      or comparison) that you are allowed to use for your implementation
@@ -118,179 +94,167 @@ NOTES:
   3. Use the btest test harness to check your functions for correctness.
   4. Use the BDD checker to formally verify your functions
   5. The maximum number of ops for each function is given in the
-     header comment for each function. If there are any inconsistencies 
+     header comment for each function. If there are any inconsistencies
      between the maximum ops in the writeup and in this file, consider
      this file the authoritative source.
 
+CAUTION:
+  Do not add an #include of <stdio.h> (or any other C library header)
+  to this file.  C library headers almost always contain constructs
+  that dlc does not understand.  For debugging, you can use printf,
+  which is declared for you just below.  It is normally bad practice
+  to declare C library functions by hand, but in this case it's less
+  trouble than any alternative.
+
+  dlc will consider each call to printf to be a violation of the
+  coding style (function calls, after all, are not allowed) so you
+  must remove all your debugging printf's again before submitting your
+  code or testing it with dlc or the BDD checker.  */
+
+extern int printf(const char *, ...);
+
+/* Edit the functions below.  Good luck!  */
+// 2
 /*
- * STEP 2: Modify the following functions according the coding rules.
- * 
- *   IMPORTANT. TO AVOID GRADING SURPRISES:
- *   1. Use the dlc compiler to check that your solutions conform
- *      to the coding rules.
- *   2. Use the BDD checker to formally verify that your solutions produce 
- *      the correct answers.
- */
-
-
-#endif
-//1
-/* 
- * bitXor - x^y using only ~ and & 
- *   Example: bitXor(4, 5) = 1
- *   Legal ops: ~ &
- *   Max ops: 14
- *   Rating: 1
- */
-int bitXor(int x, int y) {
-  return 2;
-}
-/* 
- * tmin - return minimum two's complement integer 
- *   Legal ops: ! ~ & ^ | + << >>
- *   Max ops: 4
- *   Rating: 1
- */
-int tmin(void) {
-
-  return 2;
-
-}
-//2
-/*
- * isTmax - returns 1 if x is the maximum, two's complement number,
- *     and 0 otherwise 
- *   Legal ops: ! ~ & ^ | +
- *   Max ops: 10
- *   Rating: 1
- */
-int isTmax(int x) {
-  return 2;
-}
-/* 
- * allOddBits - return 1 if all odd-numbered bits in word set to 1
- *   where bits are numbered from 0 (least significant) to 31 (most significant)
- *   Examples allOddBits(0xFFFFFFFD) = 0, allOddBits(0xAAAAAAAA) = 1
- *   Legal ops: ! ~ & ^ | + << >>
- *   Max ops: 12
- *   Rating: 2
- */
-int allOddBits(int x) {
-  return 2;
-}
-/* 
- * negate - return -x 
- *   Example: negate(1) = -1.
- *   Legal ops: ! ~ & ^ | + << >>
+ * implication - given input x and y, which are binary
+ * (taking  the values 0 or 1), return x -> y in propositional logic -
+ * 0 for false, 1 for true
+ *
+ * Below is a truth table for x -> y where A is the result
+ *
+ * |-----------|-----|
+ * |  x  |  y  |  A  |
+ * |-----------|-----|
+ * |  1  |  1  |  1  |
+ * |-----------|-----|
+ * |  1  |  0  |  0  |
+ * |-----------|-----|
+ * |  0  |  1  |  1  |
+ * |-----------|-----|
+ * |  0  |  0  |  1  |
+ * |-----------|-----|
+ *
+ *
+ *   Example: implication(1L,1L) = 1L
+ *            implication(1L,0L) = 0L
+ *   Legal ops: ! ~ ^ |
  *   Max ops: 5
  *   Rating: 2
  */
-int negate(int x) {
-  return 2;
+long implication(long x, long y) {
+    return 2L;
 }
-//3
-/* 
- * isAsciiDigit - return 1 if 0x30 <= x <= 0x39 (ASCII codes for characters '0' to '9')
- *   Example: isAsciiDigit(0x35) = 1.
- *            isAsciiDigit(0x3a) = 0.
- *            isAsciiDigit(0x05) = 0.
+/*
+ * leastBitPos - return a mask that marks the position of the
+ *               least significant 1 bit. If x == 0, return 0
+ *   Example: leastBitPos(96L) = 0x20L
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 6
+ *   Rating: 2
+ */
+long leastBitPos(long x) {
+    return 2;
+}
+/*
+ * distinctNegation - returns 1 if x != -x.
+ *     and 0 otherwise
+ *   Legal ops: ! ~ & ^ | +
+ *   Max ops: 5
+ *   Rating: 2
+ */
+long distinctNegation(long x) {
+    return 2;
+}
+/*
+ * fitsBits - return 1 if x can be represented as an
+ *  n-bit, two's complement integer.
+ *   1 <= n <= 64
+ *   Examples: fitsBits(5,3) = 0L, fitsBits(-4,3) = 1L
  *   Legal ops: ! ~ & ^ | + << >>
  *   Max ops: 15
- *   Rating: 3
+ *   Rating: 2
  */
-int isAsciiDigit(int x) {
-  return 2;
+long fitsBits(long x, long n) {
+    return 2L;
 }
-/* 
- * conditional - same as x ? y : z 
- *   Example: conditional(2,4,5) = 4
- *   Legal ops: ! ~ & ^ | + << >>
- *   Max ops: 16
- *   Rating: 3
- */
-int conditional(int x, int y, int z) {
-  return 2;
-}
-/* 
- * isLessOrEqual - if x <= y  then return 1, else return 0 
- *   Example: isLessOrEqual(4,5) = 1.
- *   Legal ops: ! ~ & ^ | + << >>
- *   Max ops: 24
- *   Rating: 3
- */
-int isLessOrEqual(int x, int y) {
-  return 2;
-}
-//4
-/* 
- * logicalNeg - implement the ! operator, using all of 
- *              the legal operators except !
- *   Examples: logicalNeg(3) = 0, logicalNeg(0) = 1
- *   Legal ops: ~ & ^ | + << >>
- *   Max ops: 12
- *   Rating: 4 
- */
-int logicalNeg(int x) {
-  return 2;
-}
-/* howManyBits - return the minimum number of bits required to represent x in
- *             two's complement
- *  Examples: howManyBits(12) = 5
- *            howManyBits(298) = 10
- *            howManyBits(-5) = 4
- *            howManyBits(0)  = 1
- *            howManyBits(-1) = 1
- *            howManyBits(0x80000000) = 32
+// 3
+/*
+ * trueFiveEighths - multiplies by 5/8 rounding toward 0,
+ *  avoiding errors due to overflow
+ *  Examples:
+ *    trueFiveEighths(11L) = 6L
+ *    trueFiveEighths(-9L) = -5L
+ *    trueFiveEighths(0x3000000000000000L) = 0x1E00000000000000L (no overflow)
  *  Legal ops: ! ~ & ^ | + << >>
- *  Max ops: 90
+ *  Max ops: 20
  *  Rating: 4
  */
-int howManyBits(int x) {
-  return 0;
+long trueFiveEighths(long x) {
+    return 2L;
 }
-//float
-/* 
- * floatScale2 - Return bit-level equivalent of expression 2*f for
- *   floating point argument f.
- *   Both the argument and result are passed as unsigned int's, but
- *   they are to be interpreted as the bit-level representation of
- *   single-precision floating point values.
- *   When argument is NaN, return argument
- *   Legal ops: Any integer/unsigned operations incl. ||, &&. also if, while
- *   Max ops: 30
- *   Rating: 4
+/*
+ * addOK - Determine if can compute x+y without overflow
+ *   Example: addOK(0x8000000000000000L,0x8000000000000000L) = 0L,
+ *            addOK(0x8000000000000000L,0x7000000000000000L) = 1L,
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 20
+ *   Rating: 3
  */
-unsigned floatScale2(unsigned uf) {
-  return 2;
+long addOK(long x, long y) {
+    return 2L;
 }
-/* 
- * floatFloat2Int - Return bit-level equivalent of expression (int) f
- *   for floating point argument f.
- *   Argument is passed as unsigned int, but
- *   it is to be interpreted as the bit-level representation of a
- *   single-precision floating point value.
- *   Anything out of range (including NaN and infinity) should return
- *   0x80000000u.
- *   Legal ops: Any integer/unsigned operations incl. ||, &&. also if, while
- *   Max ops: 30
- *   Rating: 4
+/*
+ * isPower2 - returns 1 if x is a power of 2, and 0 otherwise
+ *   Examples: isPower2(5L) = 0L, isPower2(8L) = 1L, isPower2(0) = 0L
+ *   Note that no negative number is a power of 2.
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 20
+ *   Rating: 3
  */
-int floatFloat2Int(unsigned uf) {
-  return 2;
+long isPower2(long x) {
+    return 2L;
 }
-/* 
- * floatPower2 - Return bit-level equivalent of the expression 2.0^x
- *   (2.0 raised to the power x) for any 32-bit integer x.
- *
- *   The unsigned value that is returned should have the identical bit
- *   representation as the single-precision floating-point number 2.0^x.
- *   If the result is too small to be represented as a denorm, return
- *   0. If too large, return +INF.
- * 
- *   Legal ops: Any integer/unsigned operations incl. ||, &&. Also if, while 
- *   Max ops: 30 
- *   Rating: 4
+/*
+ * rotateLeft - Rotate x to the left by n
+ *   Can assume that 0 <= n <= 63
+ *   Examples:
+ *      rotateLeft(0x8765432187654321L,4L) = 0x7654321876543218L
+ *   Legal ops: ~ & ^ | + << >> !
+ *   Max ops: 25
+ *   Rating: 3
  */
-unsigned floatPower2(int x) {
+long rotateLeft(long x, long n) {
     return 2;
+}
+// 4
+/*
+ * isPalindrome - Return 1 if bit pattern in x is equal to its mirror image
+ *   Example: isPalindrome(0x6F0F0123c480F0F6L) = 1L
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 70
+ *   Rating: 4
+ */
+long isPalindrome(long x) {
+    return 2L;
+}
+/*
+ * bitParity - returns 1 if x contains an odd number of 0's
+ *   Examples: bitParity(5L) = 0L, bitParity(7L) = 1L
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 22
+ *   Rating: 4
+ */
+long bitParity(long x) {
+    return 2L;
+}
+/*
+ * absVal - absolute value of x
+ *   Example: absVal(-1) = 1.
+ *   You may assume -TMax <= x <= TMax
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 10
+ *   Rating: 4
+ */
+long absVal(long x) {
+    return 2L;
 }

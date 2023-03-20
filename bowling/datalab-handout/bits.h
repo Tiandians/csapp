@@ -1,31 +1,25 @@
-//1
-int bitXor(int, int);
-int test_bitXor(int, int);
-int tmin();
-int test_tmin();
 //2
-int isTmax(int);
-int test_isTmax(int);
-int allOddBits();
-int test_allOddBits();
-int negate(int);
-int test_negate(int);
+long implication(long, long);
+long test_implication(long, long);
+long leastBitPos(long);
+long test_leastBitPos(long);
+long distinctNegation(long);
+long test_distinctNegation(long);
+long fitsBits(long, long);
+long test_fitsBits(long, long);
 //3
-int isAsciiDigit(int);
-int test_isAsciiDigit(int);
-int conditional(int, int, int);
-int test_conditional(int, int, int);
-int isLessOrEqual(int, int);
-int test_isLessOrEqual(int, int);
+long trueFiveEighths(long);
+long test_trueFiveEighths(long);
+long addOK(long, long);
+long test_addOK(long, long);
+long isPower2(long);
+long test_isPower2(long);
+long rotateLeft(long, long);
+long test_rotateLeft(long, long);
 //4
-int logicalNeg(int);
-int test_logicalNeg(int);
-int howManyBits(int);
-int test_howManyBits(int);
-//float
-unsigned floatScale2(unsigned);
-unsigned test_floatScale2(unsigned);
-int floatFloat2Int(unsigned);
-int test_floatFloat2Int(unsigned);
-unsigned floatPower2(int);
-unsigned test_floatPower2(int);
+long isPalindrome(long);
+long test_isPalindrome(long);
+long bitParity(long);
+long test_bitParity(long);
+long absVal(long);
+long test_absVal(long);
